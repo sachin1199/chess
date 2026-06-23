@@ -28,19 +28,19 @@ export const Square = ({
       onClick={() => handleClick(row, col)}
       className="square d-flex justify-content-center align-items-center border"
       style={{
-        position: "relative", // ✅ IMPORTANT (for dot positioning)
+        position: "relative", 
         height: "70px",
         width: "70px",
         fontSize: "28px",
         cursor: piece ? "pointer" : "default",
 
         backgroundColor: isSelected
-          ? "rgba(246, 246, 105, 0.6)" // soft yellow
+          ? "rgba(246, 246, 105, 0.6)" 
           : isLastMove
-            ? "rgba(186, 202, 68, 0.5)" // soft green highlight
+            ? "rgba(186, 202, 68, 0.5)" 
             : isLight
-              ? "#eeeed2" // light square
-              : "#769656", // dark square
+              ? "#eeeed2" 
+              : "#769656", 
       }}
     >
       <span

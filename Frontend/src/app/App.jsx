@@ -3,8 +3,11 @@ import { useChess } from "../features/hooks/useChess";
 import Board from "../components/Board/Board";
 import { pieceMap } from "../features/utils/pieceMap";
 import "../index.css";
+import { useState } from "react";
 
 function App() {
+  const [difficulty, setDifficulty] = useState("easy");
+  const [aiEnabled, setAiEnabled] = useState(true);
   const {
     board,
     selected,
@@ -18,7 +21,9 @@ function App() {
     capturedBlack,
     history,
     handleClick,
-  } = useChess();
+  } = useChess(difficulty,aiEnabled);
+
+  
 
   return (
     <div className="app-container">
@@ -53,6 +58,26 @@ function App() {
       <div className="game-container">
         <h1 className="title">♟ Chess</h1>
         <h4 className="turn">Turn: {turn}</h4>
+
+        <div style={{ marginBottom: "10px" }}>
+          {/* Difficulty Selector */}
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+          >
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+
+          {/* AI Toggle */}
+          <button
+            onClick={() => setAiEnabled(!aiEnabled)}
+            style={{ marginLeft: "10px" }}
+          >
+            {aiEnabled ? "AI ON" : "AI OFF"}
+          </button>
+        </div>
 
         {isCheck && <div className="check">CHECK</div>}
         {gameOver && <div className="game-over">{gameOver}</div>}

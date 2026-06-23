@@ -6,7 +6,7 @@ import { filterLegalMoves } from "../logic/checkUtils";
 import { isCheckmate } from "../logic/checkUtils";
 import { pieceMap } from "../utils/pieceMap";
 
-export const useChess = () => {
+export const useChess = (difficulty, aiEnabled) => {
   const [board, setBoard] = useState(initialBoard);
   const [selected, setSelected] = useState(null);
   const [turn, setTurn] = useState("White"); // whoose turn is it
@@ -35,7 +35,29 @@ export const useChess = () => {
     setCapturedWhite([]);
     setHistory([]);
   };
+  // ai moves
+  const getAiMove = async (board, turn, difficulty) => {
+    try {
+      console.log("Calling AI...");
+      console.log("Sending:", { board, turn, difficulty });
 
+      const res = await fetch("http://127.0.0.1:8000/ai-move", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ board, turn, difficulty }),
+      });
+
+      const data = await res.json();
+
+      console.log("AI RESPONSE:", data);
+
+      return data;
+    } catch (err) {
+      console.error("AI error:", err);
+    }
+  };
   //
   const isCheck = isKingInCheck(board, turn === "White");
   //
@@ -129,8 +151,60 @@ export const useChess = () => {
       }
 
       setBoard(newboard);
+
+      const flat = newboard.flat();
+
+      if (!flat.includes("k")) {
+        setGameOver("White wins");
+      }
+
+      if (!flat.includes("K")) {
+        setGameOver("Black wins");
+      }
+      const isGameFinished =
+        isMate ||
+        !newboard.flat().includes("k") ||
+        !newboard.flat().includes("K");
+
+      if (aiEnabled && nextTurn === "Black" && !isGameFinished) {
+        console.log("AI TRIGGERED"); //
+
+        setTimeout(async () => {
+          const aiMove = await getAiMove(newboard, "Black", difficulty);
+
+          if (!aiMove) return;
+
+          const [fromRow, fromCol] = aiMove.from;
+          const [toRow, toCol] = aiMove.to;
+
+          setBoard((prevBoard) => {
+            const updatedBoard = prevBoard.map((r) => [...r]);
+            const aiPiece = updatedBoard[fromRow][fromCol];
+
+            if (!aiPiece) return prevBoard;
+
+            updatedBoard[toRow][toCol] = aiPiece;
+            updatedBoard[fromRow][fromCol] = "";
+
+            const flat = updatedBoard.flat();
+            if (!flat.includes("k")) setGameOver("White wins");
+            if (!flat.includes("K")) setGameOver("Black wins");
+
+            return updatedBoard;
+          });
+
+          setLastMove({
+            from: { row: fromRow, col: fromCol },
+            to: { row: toRow, col: toCol },
+          });
+
+          setTurn("White");
+        }, 500);
+      }
       setSelected(null);
       setValidMoves([]);
+
+      // in same block
       setTurn(nextTurn);
     }
   };
