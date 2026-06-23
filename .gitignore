@@ -1,0 +1,32 @@
+# Python cache
+AI_opponent/__pycache__/
+AI_opponent/**/*.pyc
+
+# Python virtual environments
+AI_opponent/venv/
+AI_opponent/.venv/
+
+# Backend dependencies
+Backend/node_modules/
+
+# Frontend dependencies
+Frontend/node_modules/
+
+# Environment variables
+Backend/.env
+Frontend/.env
+AI_opponent/.env
+
+# Build folders
+Frontend/dist/
+Frontend/build/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
