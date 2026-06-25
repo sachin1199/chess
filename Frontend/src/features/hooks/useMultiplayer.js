@@ -5,8 +5,7 @@ import { moveMap } from "../logic/moveGenerator";
 import { isKingInCheck, filterLegalMoves, isCheckmate } from "../logic/checkUtils";
 import { pieceMap } from "../utils/pieceMap";
 
-const SERVER = "http://localhost:3001";
-
+const SERVER = "https://chess-04xj.onrender.com";
 export const useMultiplayer = () => {
   const socketRef = useRef(null);
 
