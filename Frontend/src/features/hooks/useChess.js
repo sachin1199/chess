@@ -35,8 +35,8 @@ export const useChess = (difficulty, aiEnabled, engine = "standard") => {
   const getAiMove = async (board, turn, difficulty) => {
     const endpoint =
       engine === "aggressive"
-        ? "http://127.0.0.1:8000/ai-move-aggressive"
-        : "http://127.0.0.1:8000/ai-move";
+        ? "https://chess-1-mck3.onrender.com/ai-move-aggressive"
+        : "https://chess-1-mck3.onrender.com/ai-move";
 
     try {
       const res = await fetch(endpoint, {
@@ -136,10 +136,18 @@ export const useChess = (difficulty, aiEnabled, engine = "standard") => {
       if (isGameFinished) {
         const winner = isMate ? `${nextTurn} is in Checkmate!`
           : !newboard.flat().includes("k") ? "White wins" : "Black wins";
-        fetch("http://localhost:3001/game/save", {
+        fetch("https://chess-04xj.onrender.com/game/save", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ board: newboard, history, capturedWhite, capturedBlack, winner, difficulty, engine }),
+          body: JSON.stringify({
+            board: newboard,
+            history,
+            capturedWhite,
+            capturedBlack,
+            winner,
+            difficulty,
+            engine,
+          }),
         }).catch(() => {});
       }
 
