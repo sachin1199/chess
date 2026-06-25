@@ -6,7 +6,7 @@ Interactive chess game built using **React** with clean UI and core chess logic 
 
 ## 🚀 Live Demo
 
-🔗 https://chess-three-rouge.vercel.app
+🔗 https://chess-pink-nu.vercel.app
 
 ---
 
