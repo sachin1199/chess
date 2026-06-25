@@ -2,28 +2,32 @@ import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { initialBoard } from "../constants/initialBoard";
 import { moveMap } from "../logic/moveGenerator";
-import { isKingInCheck, filterLegalMoves, isCheckmate } from "../logic/checkUtils";
+import {
+  isKingInCheck,
+  filterLegalMoves,
+  isCheckmate,
+} from "../logic/checkUtils";
 import { pieceMap } from "../utils/pieceMap";
 
-const SERVER = "https://chess-04xj.onrender.com";
+const SERVER = "https://chess-e4xj.onrender.com";
 export const useMultiplayer = () => {
   const socketRef = useRef(null);
 
-  const [board, setBoard]               = useState(initialBoard);
-  const [selected, setSelected]         = useState(null);
-  const [validMoves, setValidMoves]     = useState([]);
-  const [turn, setTurn]                 = useState("White");
-  const [lastMove, setLastMove]         = useState(null);
+  const [board, setBoard] = useState(initialBoard);
+  const [selected, setSelected] = useState(null);
+  const [validMoves, setValidMoves] = useState([]);
+  const [turn, setTurn] = useState("White");
+  const [lastMove, setLastMove] = useState(null);
   const [capturedWhite, setCapturedWhite] = useState([]);
   const [capturedBlack, setCapturedBlack] = useState([]);
-  const [history, setHistory]           = useState([]);
-  const [gameOver, setGameOver]         = useState(null);
+  const [history, setHistory] = useState([]);
+  const [gameOver, setGameOver] = useState(null);
 
   // Multiplayer state
-  const [roomId, setRoomId]             = useState(null);
-  const [myColor, setMyColor]           = useState(null);   // "White" | "Black"
-  const [status, setStatus]             = useState("idle"); // idle | waiting | playing | over
-  const [statusMsg, setStatusMsg]       = useState("");
+  const [roomId, setRoomId] = useState(null);
+  const [myColor, setMyColor] = useState(null); // "White" | "Black"
+  const [status, setStatus] = useState("idle"); // idle | waiting | playing | over
+  const [statusMsg, setStatusMsg] = useState("");
 
   // Connect socket once
   useEffect(() => {
@@ -34,7 +38,9 @@ export const useMultiplayer = () => {
       setRoomId(roomId);
       setMyColor(color);
       setStatus("waiting");
-      setStatusMsg(`Room: ${roomId} — Share this code with your opponent. Waiting...`);
+      setStatusMsg(
+        `Room: ${roomId} — Share this code with your opponent. Waiting...`,
+      );
     });
 
     socket.on("room_joined", ({ roomId, color }) => {
@@ -48,15 +54,29 @@ export const useMultiplayer = () => {
       resetLocal();
     });
 
-    socket.on("opponent_move", ({ board, move, turn, history, capturedWhite, capturedBlack, gameOver }) => {
-      setBoard(board);
-      setTurn(turn);
-      setHistory(history);
-      setCapturedWhite(capturedWhite);
-      setCapturedBlack(capturedBlack);
-      setLastMove(move);
-      if (gameOver) { setGameOver(gameOver); setStatus("over"); }
-    });
+    socket.on(
+      "opponent_move",
+      ({
+        board,
+        move,
+        turn,
+        history,
+        capturedWhite,
+        capturedBlack,
+        gameOver,
+      }) => {
+        setBoard(board);
+        setTurn(turn);
+        setHistory(history);
+        setCapturedWhite(capturedWhite);
+        setCapturedBlack(capturedBlack);
+        setLastMove(move);
+        if (gameOver) {
+          setGameOver(gameOver);
+          setStatus("over");
+        }
+      },
+    );
 
     socket.on("opponent_left", () => {
       setStatusMsg("Opponent disconnected.");
@@ -90,7 +110,8 @@ export const useMultiplayer = () => {
 
   const createRoom = () => socketRef.current?.emit("create_room");
 
-  const joinRoom = (code) => socketRef.current?.emit("join_room", { roomId: code.trim().toUpperCase() });
+  const joinRoom = (code) =>
+    socketRef.current?.emit("join_room", { roomId: code.trim().toUpperCase() });
 
   const resign = () => {
     if (roomId) socketRef.current?.emit("resign", { roomId });
@@ -111,12 +132,22 @@ export const useMultiplayer = () => {
     if (!selected && piece === "") return;
 
     if (!selected && piece !== "") {
-      if ((turn === "White" && !isWhitePiece) || (turn === "Black" && !isBlackPiece)) return;
+      if (
+        (turn === "White" && !isWhitePiece) ||
+        (turn === "Black" && !isBlackPiece)
+      )
+        return;
       setSelected({ row, col });
       const generator = moveMap[piece];
       if (generator) {
         let moves = generator(board, row, col, piece);
-        moves = filterLegalMoves(board, moves, { row, col }, piece, turn === "White");
+        moves = filterLegalMoves(
+          board,
+          moves,
+          { row, col },
+          piece,
+          turn === "White",
+        );
         setValidMoves(moves);
       } else {
         setValidMoves([]);
@@ -125,11 +156,17 @@ export const useMultiplayer = () => {
     }
 
     if (selected.row === row && selected.col === col) {
-      setSelected(null); setValidMoves([]); return;
+      setSelected(null);
+      setValidMoves([]);
+      return;
     }
 
     const isValid = validMoves.some((m) => m.row === row && m.col === col);
-    if (!isValid) { setSelected(null); setValidMoves([]); return; }
+    if (!isValid) {
+      setSelected(null);
+      setValidMoves([]);
+      return;
+    }
 
     // Apply move
     const movingPiece = board[selected.row][selected.col];
@@ -140,14 +177,18 @@ export const useMultiplayer = () => {
     const newCapturedBlack = [...capturedBlack];
 
     if (capturedPiece !== "") {
-      if (capturedPiece === capturedPiece.toUpperCase()) newCapturedWhite.push(capturedPiece);
+      if (capturedPiece === capturedPiece.toUpperCase())
+        newCapturedWhite.push(capturedPiece);
       else newCapturedBlack.push(capturedPiece);
     }
 
     newBoard[row][col] = newBoard[selected.row][selected.col];
     newBoard[selected.row][selected.col] = "";
 
-    const moveRecord = { from: { row: selected.row, col: selected.col }, to: { row, col } };
+    const moveRecord = {
+      from: { row: selected.row, col: selected.col },
+      to: { row, col },
+    };
     const newHistory = [
       ...history,
       `${myColor[0]}:${movingPiece}[${pieceMap[movingPiece]}] (${selected.row},${selected.col})→(${row},${col})`,
@@ -157,9 +198,9 @@ export const useMultiplayer = () => {
     const isMate = isCheckmate(newBoard, nextTurn === "White");
     const flat = newBoard.flat();
     let over = null;
-    if (isMate)                    over = `${nextTurn} is in Checkmate!`;
-    else if (!flat.includes("k"))  over = "White wins";
-    else if (!flat.includes("K"))  over = "Black wins";
+    if (isMate) over = `${nextTurn} is in Checkmate!`;
+    else if (!flat.includes("k")) over = "White wins";
+    else if (!flat.includes("K")) over = "Black wins";
 
     setBoard(newBoard);
     setTurn(nextTurn);
@@ -169,7 +210,10 @@ export const useMultiplayer = () => {
     setLastMove(moveRecord);
     setSelected(null);
     setValidMoves([]);
-    if (over) { setGameOver(over); setStatus("over"); }
+    if (over) {
+      setGameOver(over);
+      setStatus("over");
+    }
 
     // Emit to server
     socketRef.current?.emit("make_move", {
@@ -185,9 +229,23 @@ export const useMultiplayer = () => {
   };
 
   return {
-    board, selected, validMoves, turn, isCheck,
-    lastMove, capturedWhite, capturedBlack, history, gameOver,
-    roomId, myColor, status, statusMsg,
-    createRoom, joinRoom, resign, handleClick,
+    board,
+    selected,
+    validMoves,
+    turn,
+    isCheck,
+    lastMove,
+    capturedWhite,
+    capturedBlack,
+    history,
+    gameOver,
+    roomId,
+    myColor,
+    status,
+    statusMsg,
+    createRoom,
+    joinRoom,
+    resign,
+    handleClick,
   };
 };
