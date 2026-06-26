@@ -9,7 +9,7 @@ import {
 } from "../logic/checkUtils";
 import { pieceMap } from "../utils/pieceMap";
 
-const SERVER = "https://chess-e4xj.onrender.com";
+const SERVER = "https://chess-iopg.onrender.com";
 export const useMultiplayer = () => {
   const socketRef = useRef(null);
 
@@ -25,11 +25,24 @@ export const useMultiplayer = () => {
 
   // Multiplayer state
   const [roomId, setRoomId] = useState(null);
-  const [myColor, setMyColor] = useState(null); // "White" | "Black"
-  const [status, setStatus] = useState("idle"); // idle | waiting | playing | over
+  const [myColor, setMyColor] = useState(null);      // "White" | "Black"
+  const [status, setStatus] = useState("idle");     // idle | waiting | playing | over
   const [statusMsg, setStatusMsg] = useState("");
 
-  // Connect socket once
+
+  const resetLocal = () => {
+    setBoard(initialBoard);
+    setSelected(null);
+    setValidMoves([]);
+    setTurn("White");
+    setLastMove(null);
+    setCapturedWhite([]);
+    setCapturedBlack([]);
+    setHistory([]);
+    setGameOver(null);
+  };
+
+  // 
   useEffect(() => {
     const socket = io(SERVER);
     socketRef.current = socket;
@@ -96,17 +109,7 @@ export const useMultiplayer = () => {
     return () => socket.disconnect();
   }, []);
 
-  const resetLocal = () => {
-    setBoard(initialBoard);
-    setSelected(null);
-    setValidMoves([]);
-    setTurn("White");
-    setLastMove(null);
-    setCapturedWhite([]);
-    setCapturedBlack([]);
-    setHistory([]);
-    setGameOver(null);
-  };
+  
 
   const createRoom = () => socketRef.current?.emit("create_room");
 
@@ -215,7 +218,7 @@ export const useMultiplayer = () => {
       setStatus("over");
     }
 
-    // Emit to server
+
     socketRef.current?.emit("make_move", {
       roomId,
       board: newBoard,

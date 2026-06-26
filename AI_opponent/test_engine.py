@@ -13,7 +13,6 @@ from ai.move_generator import (
 from ai.evaluation import evaluate_board
 
 
-# ================= PIECE TESTS =================
 
 def test_pawn():
     board = [["" for _ in range(8)] for _ in range(8)]
@@ -63,7 +62,6 @@ def test_king():
     print("King Moves:", moves)
 
 
-# ================= SYSTEM TESTS =================
 
 def test_check_detection():
     board = [["" for _ in range(8)] for _ in range(8)]
@@ -78,7 +76,7 @@ def test_legal_moves():
 
     board[7][4] = "K"
     board[0][4] = "k"
-    board[1][4] = "r"  # black rook attacking
+    board[1][4] = "r"  
 
     moves = get_all_white_moves(board)
     legal = filter_legal_moves(board, moves, True)
@@ -95,7 +93,6 @@ def test_evaluation():
     print("Evaluation Score:", evaluate_board(board))
 
 
-# ================= RUN =================
 
 if __name__ == "__main__":
     print("\n--- PAWN ---")

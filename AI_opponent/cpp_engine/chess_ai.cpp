@@ -1,13 +1,4 @@
-/*
- * Chess AI Engine - Aggressive Attacker
- * Uses: Minimax algorithm + Alpha-Beta Pruning (tree pruning DSA)
- * Plays as: Black
- * Strategy: Maximizes material gain + king proximity attacks + center control
- *
- * Board encoding: uppercase = White, lowercase = Black, "" = empty square
- * Input  (stdin): 64 space-separated piece strings, then depth integer
- * Output (stdout): "fromRow fromCol toRow toCol"
- */
+
 
 #include <iostream>
 #include <vector>
@@ -16,18 +7,14 @@
 #include <algorithm>
 #include <sstream>
 
-// ─────────────────────────────────────────────
-// BOARD TYPE
-// ─────────────────────────────────────────────
+
 typedef std::vector<std::vector<std::string>> Board;
 
 struct Move {
     int fromRow, fromCol, toRow, toCol;
 };
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
+
 bool isUpper(const std::string& p) {
     return !p.empty() && p[0] >= 'A' && p[0] <= 'Z';
 }
@@ -45,9 +32,7 @@ Board applyMove(const Board& board, const Move& m) {
     return nb;
 }
 
-// ─────────────────────────────────────────────
-// MOVE GENERATORS (Black pieces)
-// ─────────────────────────────────────────────
+
 void addSlidingMoves(const Board& b, int row, int col,
                      const std::vector<std::pair<int,int>>& dirs,
                      std::vector<Move>& moves) {
@@ -131,9 +116,8 @@ std::vector<Move> getBlackMoves(const Board& board) {
     return moves;
 }
 
-// ─────────────────────────────────────────────
-// WHITE MOVE GENERATOR (for legal move filtering)
-// ─────────────────────────────────────────────
+
+
 std::vector<Move> getWhiteMoves(const Board& board) {
     std::vector<Move> moves;
 
@@ -183,9 +167,7 @@ std::vector<Move> getWhiteMoves(const Board& board) {
     return moves;
 }
 
-// ─────────────────────────────────────────────
-// CHECK DETECTION
-// ─────────────────────────────────────────────
+
 bool isKingInCheck(const Board& board, bool isWhite) {
     std::string king = isWhite ? "K" : "k";
     int kr = -1, kc = -1;
@@ -213,10 +195,7 @@ std::vector<Move> filterLegal(const Board& board,
     return legal;
 }
 
-// ─────────────────────────────────────────────
-// AGGRESSIVE EVALUATION
-// Piece values + king proximity bonus + center control + attack pressure
-// ─────────────────────────────────────────────
+
 int pieceValue(const std::string& p) {
     if (p == "p") return 100;  if (p == "P") return -100;
     if (p == "n") return 320;  if (p == "N") return -320;
@@ -285,10 +264,7 @@ int evaluate(const Board& board) {
     return score;
 }
 
-// ─────────────────────────────────────────────
-// MINIMAX + ALPHA-BETA PRUNING
-// maximizing = Black's turn
-// ─────────────────────────────────────────────
+
 int alphaBeta(const Board& board, int depth, int alpha, int beta, bool maximizing) {
     if (depth == 0) return evaluate(board);
 
@@ -315,15 +291,12 @@ int alphaBeta(const Board& board, int depth, int alpha, int beta, bool maximizin
             int val = alphaBeta(nb, depth - 1, alpha, beta, true);
             minEval = std::min(minEval, val);
             beta = std::min(beta, val);
-            if (beta <= alpha) break;  // ── PRUNE ──
+            if (beta <= alpha) break; 
         }
         return minEval;
     }
 }
 
-// ─────────────────────────────────────────────
-// MOVE ORDERING: captures first (improves pruning)
-// ─────────────────────────────────────────────
 void orderMoves(const Board& board, std::vector<Move>& moves) {
     std::sort(moves.begin(), moves.end(), [&](const Move& a, const Move& b) {
         bool aCapture = !board[a.toRow][a.toCol].empty();
@@ -350,9 +323,7 @@ Move findBestMove(const Board& board, int depth) {
     return best;
 }
 
-// ─────────────────────────────────────────────
-// MAIN — reads board from stdin, writes move to stdout
-// ─────────────────────────────────────────────
+
 int main() {
     Board board(8, std::vector<std::string>(8, ""));
     int depth;

@@ -6,7 +6,6 @@ import { filterLegalMoves } from "../logic/checkUtils";
 import { isCheckmate } from "../logic/checkUtils";
 import { pieceMap } from "../utils/pieceMap";
 
-// engine: "standard" → Python minimax  |  "aggressive" → C++ alpha-beta
 export const useChess = (difficulty, aiEnabled, engine = "standard") => {
   const [board, setBoard] = useState(initialBoard);
   const [selected, setSelected] = useState(null);
@@ -35,8 +34,8 @@ export const useChess = (difficulty, aiEnabled, engine = "standard") => {
   const getAiMove = async (board, turn, difficulty) => {
     const endpoint =
       engine === "aggressive"
-        ? "https://chess-e4xj.onrender.com/ai-move-aggressive"
-        : "https://chess-e4xj.onrender.com/ai-move"; 
+        ? "https://chess-1-g51p.onrender.com/ai-move-aggressive"
+        : "https://chess-1-g51p.onrender.com/ai-move"; 
 
     try {
       const res = await fetch(endpoint, {
@@ -132,11 +131,11 @@ export const useChess = (difficulty, aiEnabled, engine = "standard") => {
         !newboard.flat().includes("k") ||
         !newboard.flat().includes("K");
 
-      // Save to Node backend when AI game ends
+    
       if (isGameFinished) {
         const winner = isMate ? `${nextTurn} is in Checkmate!`
           : !newboard.flat().includes("k") ? "White wins" : "Black wins";
-        fetch("https://chess-e4xj.onrender.com/game/save", {
+        fetch("https://chess-iopg.onrender.com/game/save", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

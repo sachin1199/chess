@@ -33,7 +33,6 @@ def board_to_cpp_input(board: list, depth: int) -> str:
     return " ".join(tokens)
 
 
-# ─── STANDARD AI (Python minimax) ───────────────────────────
 @app.post("/ai-move")
 def ai_move(state: GameState):
     board = state.board
@@ -51,7 +50,6 @@ def ai_move(state: GameState):
     return move
 
 
-# ─── AGGRESSIVE AI (C++ engine with alpha-beta pruning) ──────
 @app.post("/ai-move-aggressive")
 def ai_move_aggressive(state: GameState):
     difficulty = state.difficulty
